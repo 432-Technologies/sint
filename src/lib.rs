@@ -16,13 +16,13 @@ async {
 ```
 
 */
-
 use std::{
     future::Future,
     pin::Pin,
     task::{Context, Poll},
-    time::{Duration, Instant},
 };
+pub use web_time;
+pub use web_time::{Duration,Instant};
 
 #[repr(transparent)]
 #[pin_project::pin_project]
@@ -52,10 +52,10 @@ impl Timeout {
         Timeout {
             #[cfg(not(target_family = "wasm"))]
             backend: tokio::time::sleep_until(instant.into()),
-
+            
             #[cfg(target_family = "wasm")]
             backend: gloo_timers::future::TimeoutFuture::new(
-                instant.duration_since(Instant::now()).as_millis() as u32,
+                instant.elapsed().as_millis() as u32,
             ),
         }
     }
